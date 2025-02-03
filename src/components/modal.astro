@@ -1,0 +1,82 @@
+<dialog>
+    <form id="submissionForm" method="dialog">
+        <h2>Explicación de bajo desempeño</h2>
+        <label for="reasons"
+            >Escribe una breve y clara explicación de los motivos por los cuales
+            no has logrado acreditar las materias por las que incurriste en baja
+            por Artículo 35 (Máximo 250 palabras)</label
+        >
+        <textarea id="reasons" name="reasons" maxlength="250" required
+        ></textarea>
+
+        <label>
+            <span>Sube evidencia (PDF)</span>
+            <input
+                type="file"
+                id="evidence"
+                name="evidence"
+                accept="application/pdf"
+                required
+            />
+        </label>
+
+        <label>
+            <span>Carta del tutor (PDF)</span>
+            <input
+                type="file"
+                id="guardianLetter"
+                name="guardianLetter"
+                accept="application/pdf"
+                required
+            />
+        </label>
+
+        <div class="flex justify-between mt-4">
+            <button type="submit"> Enviar </button>
+            <button type="button" id="closeModal"> Cancelar </button>
+        </div>
+    </form>
+</dialog>
+
+<script>
+
+    const dialog = document.querySelector("dialog");
+    const closeModal = document.querySelector("#closeModal");
+    const form = document.getElementById("submissionForm");  // Cambié el ID aquí
+
+    if (closeModal && dialog) {
+        closeModal.addEventListener("click", () => {
+            dialog.close();
+        });
+    }
+
+    if (form && dialog) {
+        form.addEventListener("submit", async (event: Event) => {
+            event.preventDefault();
+
+            const target = event.target as HTMLFormElement;
+            const formData = new FormData(target);
+
+            try {
+                const response = await fetch(
+                    "http://localhost:4321/api/student_info/send_request", // Asegúrate de que el endpoint esté correctamente
+                    {
+                        method: "PUT", // Cambié POST a PUT
+                        body: formData,
+                    },
+                );
+
+                if (response.ok) {
+                    alert("Solicitud enviada correctamente");
+                    dialog.close();
+                    target.reset();
+                } else {
+                    alert("Error al enviar la solicitud");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error al enviar la solicitud");
+            }
+        });
+    }
+</script>
