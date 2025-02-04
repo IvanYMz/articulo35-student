@@ -1,51 +1,66 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Modal from "../components/modal.astro";
-
-type StudentSubjects = {
-    name: string;
-    nrc: string;
-};
+import type { StudentRequest } from "../types/types";
 
 // Fetch data
-let subjects;
+let studentSubjects: StudentRequest | null = null;
+let fetchError: string | null = null;
+
 try {
-    const response = await fetch(
-        "http://localhost:4321/api/student_info/subjects",
-    );
+    const response = await fetch("http://localhost:4321/api/student_info/subjects");
+    
     if (!response.ok) {
-        console.error("Error fetching academic records");
+        fetchError = `Error fetching academic records: ${response.statusText}`;
     } else {
-        subjects = (await response.json()) as StudentSubjects[];
+        studentSubjects = await response.json() as StudentRequest;
     }
 } catch (err) {
-    console.error("Fetch error:", err);
+    fetchError = `Fetch error: ${(err as Error).message}`;
 }
 ---
 
 <Layout title="Home">
-    <ul>
-        {
-            subjects?.map((subject) => (
-                <li>
-                    <strong>{subject.nrc}</strong> - {subject.name}
-                </li>
-            ))
-        }
-    </ul>
-    <button class="process">Iniciar proceso</button>
-    <Modal/>
+    {fetchError && (
+        <p>{fetchError}</p>
+    )}
+
+    {studentSubjects ? (
+        <>
+            <ul>
+                {studentSubjects.subjects.map((subject) => (
+                    <li>
+                        <strong>{subject.nrc}</strong> - {subject.name}
+                    </li>
+                ))}
+            </ul>
+
+            {studentSubjects.request ? (
+                <p>
+                    Request Status: <span>{studentSubjects.status}</span>
+                </p>
+            ) : (
+                <button class="process">
+                    Start Process
+                </button>
+            )}
+            
+            <Modal />
+        </>
+    ) : !fetchError && (
+        <p>Loading student data...</p>
+    )}
 </Layout>
 
 <script>
-    // Getting elements
-    const processButton = document.querySelector(".process");
-    const dialog = document.querySelector("dialog");
+    document.addEventListener("DOMContentLoaded", () => {
+        const processButton = document.querySelector(".process");
+        const dialog = document.querySelector("dialog");
 
-    // Adding event listener when clicking the process button
-    if (processButton && dialog) {
-    processButton.addEventListener("click", () => { // Show the dialog
-            dialog.showModal();
-        });
-    }
+        if (processButton && dialog) {
+            processButton.addEventListener("click", () => {
+                dialog.showModal();
+            });
+        };
+    });
 </script>

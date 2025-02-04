@@ -1,0 +1,34 @@
+---
+import Layout from "../layouts/Layout.astro";
+import type { StudentInformation } from "../types/types";
+
+// Fetch data
+let studentInformation: StudentInformation | null = null;
+let fetchError: string | null = null;
+
+try {
+    const response = await fetch(
+        "http://localhost:4321/api/student_info/student_information",
+    );
+
+    if (!response.ok) {
+        fetchError = `Error fetching academic records: ${response.statusText}`;
+    } else {
+        studentInformation = (await response.json()) as StudentInformation;
+    }
+} catch (err) {
+    fetchError = `Fetch error: ${(err as Error).message}`;
+}
+---
+
+<Layout title="Mis datos">
+    {fetchError && <p>{fetchError}</p>}
+
+    {
+        studentInformation ? (
+            <>{studentInformation.personalData.full_name}</>
+        ) : (
+            !fetchError && <p>Loading student data...</p>
+        )
+    }
+</Layout>

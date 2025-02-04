@@ -1,62 +1,99 @@
 import type { APIRoute } from "astro";
 import { supabase } from "../../../lib/supabase";
+import type { SupabaseSubjectsIdResponse } from "../../../types/types";
 
-export const PUT: APIRoute = async function ({ request }) {
-    try {
-        const { data, error } = await supabase.auth.getUser();
+// Helper function for file uploads
+const uploadFile = async (path: string, file: File) => {
+  return supabase.storage
+    .from("files")
+    .upload(path, file, { cacheControl: "3600", upsert: false });
+};
 
-        if (!data) {
-            return new Response("No user authenticated", { status: 401 }); // Si no hay usuario autenticado
-        }
-
-        console.log(data.user?.id)
-
-        const formData = await request.formData();
-        const student_id = data.user?.id; // Extraemos el student_id
-        const evidence = formData.get('evidence'); // Extraemos el archivo de evidencia
-        const guardianLetter = formData.get('guardianLetter'); // Extraemos el archivo de la carta del tutor
-
-        // Verificamos si student_id, evidence y guardianLetter son válidos
-        if (!student_id || !(evidence instanceof File) || !(guardianLetter instanceof File)) {
-            return new Response("Missing parameters or files are not valid", { status: 400 });
-        }
-        console.log(student_id);
-        // Subir el archivo de evidencia
-        const evidencePath = `${student_id}/documents/evidence/${evidence.name}`;
-        const { data: evidenceData, error: evidenceError } = await supabase
-            .storage
-            .from('files')
-            .upload(evidencePath, evidence, {
-                cacheControl: '3600',
-                upsert: false
-            });
-
-        if (evidenceError) {
-            console.log(evidenceError.message);
-            return new Response(evidenceError.message, { status: 500 });
-        }
-
-        // Subir la carta del tutor
-        const guardianLetterPath = `${student_id}/documents/guardianLetter/${guardianLetter.name}`;
-        const { data: guardianLetterData, error: guardianLetterError } = await supabase
-            .storage
-            .from('files')
-            .upload(guardianLetterPath, guardianLetter, {
-                cacheControl: '3600',
-                upsert: false
-            });
-
-        if (guardianLetterError) {
-            console.log(guardianLetterError.message);
-            return new Response(guardianLetterError.message, { status: 500 });
-        }
-
-        return new Response("Request successfully uploaded", { status: 200 });
-    } catch (err) {
-        console.error("Error:", err);
-        return new Response(JSON.stringify({ success: false, error: 'Internal server error' }), {
-            status: 500,
-            headers: { 'Content-Type': 'application/json' },
-        });
+export const PUT: APIRoute = async ({ request }) => {
+  try {
+    // Authentication check
+    const { data: userData, error: authError } = await supabase.auth.getUser();
+    
+    if (authError) throw authError;
+    if (!userData?.user?.id) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
     }
+
+    // Form data processing
+    const formData = await request.formData();
+    const studentId = userData.user.id;
+    const evidence = formData.get("evidence");
+    const guardianLetter = formData.get("guardianLetter");
+    const studentDescription = formData.get("reasons")?.toString() || "";
+
+    // Validate required files
+    if (!(evidence instanceof File) || !(guardianLetter instanceof File)) {
+      return new Response(
+        JSON.stringify({ error: "Invalid or missing file attachments" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Parallel file uploads
+    const uploadPromises = [
+      uploadFile(`${studentId}/documents/evidence/${evidence.name}`, evidence),
+      uploadFile(`${studentId}/documents/guardianLetter/${guardianLetter.name}`, guardianLetter),
+    ];
+
+    const uploadResults = await Promise.all(uploadPromises);
+    
+    // Check for upload errors
+    for (const result of uploadResults) {
+      if (result.error) throw result.error;
+    }
+
+    // Get subjects with maximum attempts
+    const { data: problematicSubjects, error: subjectsError } = await supabase
+      .from("student_subjects")
+      .select("available_subjects(id)")
+      .eq("attempts", 3);
+
+    if (subjectsError) throw subjectsError;
+
+    // Prepare request data
+    const requestsData = (problematicSubjects as unknown as SupabaseSubjectsIdResponse[]).map(
+      ({ available_subjects }) => ({
+        student_id: studentId,
+        subject_id: available_subjects.id,
+        description: studentDescription,
+      })
+    );
+
+    // Skip insert if no subjects need processing
+    if (requestsData.length === 0) {
+      return new Response(
+        JSON.stringify({ message: "No subjects requiring attention" }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    // Batch insert requests
+    const { error: insertError } = await supabase
+      .from("requests")
+      .insert(requestsData);
+
+    if (insertError) throw insertError;
+
+    return new Response(
+      JSON.stringify({ message: "Request processed successfully" }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
+  } catch (error) {
+    console.error("Processing error:", error);
+    return new Response(
+      JSON.stringify({ 
+        error: "Internal server error",
+        ...(error instanceof Error && { details: error.message }) 
+      }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
+  }
 };

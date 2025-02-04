@@ -42,7 +42,7 @@
 
     const dialog = document.querySelector("dialog");
     const closeModal = document.querySelector("#closeModal");
-    const form = document.getElementById("submissionForm");  // Cambié el ID aquí
+    const form = document.getElementById("submissionForm");
 
     if (closeModal && dialog) {
         closeModal.addEventListener("click", () => {
@@ -59,9 +59,9 @@
 
             try {
                 const response = await fetch(
-                    "http://localhost:4321/api/student_info/send_request", // Asegúrate de que el endpoint esté correctamente
+                    "http://localhost:4321/api/student_info/send_request",
                     {
-                        method: "PUT", // Cambié POST a PUT
+                        method: "PUT",
                         body: formData,
                     },
                 );
@@ -70,6 +70,7 @@
                     alert("Solicitud enviada correctamente");
                     dialog.close();
                     target.reset();
+                    window.location.reload();
                 } else {
                     alert("Error al enviar la solicitud");
                 }
