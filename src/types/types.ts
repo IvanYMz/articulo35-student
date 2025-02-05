@@ -48,3 +48,11 @@ export type StudentInformation = {
         division: string;
     };
 };
+
+export type FileData = {
+    name: string;
+    url: string;
+    folder: string;
+};
+
+export type StudentFiles = FileData[];
