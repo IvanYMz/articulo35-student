@@ -1,0 +1,266 @@
+---
+
+---
+
+<aside id="sidebar">
+    <header id="sidebar-header">
+        <a href="/">
+            <img
+                id="logo"
+                src="src/assets/Escudo_UdG.svg"
+                alt="Escudo de la UDG"
+            />
+        </a>
+        <span id="sidebar-title">Artículo 35</span>
+        <button id="button-toggle-menu">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="28px"
+                viewBox="0 -960 960 960"
+                width="28px"
+                fill="#2d3c5a"
+                ><path
+                    d="M440-240 200-480l240-240 56 56-183 184 183 184-56 56Zm264 0L464-480l240-240 56 56-183 184 183 184-56 56Z"
+                ></path></svg
+            >
+        </button>
+    </header>
+    <nav id="sidebar-menu">
+        <ul id="menu-list">
+            <li>
+                <a class="menu-item" href="/home">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="28px"
+                        viewBox="0 -960 960 960"
+                        width="28px"
+                        fill="#2d3c5a"
+                        ><path
+                            d="M240-200h120v-240h240v240h120v-360L480-740 240-560v360Zm-80 80v-480l320-240 320 240v480H520v-240h-80v240H160Zm320-350Z"
+                        ></path></svg
+                    >
+                    <span class="menu-item-span">Inicio</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="menu-item" href="student_files">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="28px"
+                        viewBox="0 -960 960 960"
+                        width="28px"
+                        fill="#2d3c5a"
+                        ><path
+                            d="M320-240h320v-80H320v80Zm0-160h320v-80H320v80ZM240-80q-33 0-56.5-23.5T160-160v-640q0-33 23.5-56.5T240-880h320l240 240v480q0 33-23.5 56.5T720-80H240Zm280-520v-200H240v640h480v-440H520ZM240-800v200-200 640-640Z"
+                        ></path></svg
+                    >
+                    <span class="menu-item-span">Mis documentos</span>
+                </a>
+            </li>
+
+            <li>
+                <a class="menu-item" href="/student_info">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        height="28px"
+                        viewBox="0 -960 960 960"
+                        width="28px"
+                        fill="#2d3c5a"
+                        ><path
+                            d="M560-440h200v-80H560v80Zm0-120h200v-80H560v80ZM200-320h320v-22q0-45-44-71.5T360-440q-72 0-116 26.5T200-342v22Zm160-160q33 0 56.5-23.5T440-560q0-33-23.5-56.5T360-640q-33 0-56.5 23.5T280-560q0 33 23.5 56.5T360-480ZM160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm0-80h640v-480H160v480Zm0 0v-480 480Z"
+                        ></path></svg
+                    >
+                    <span class="menu-item-span">Mi información</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <button id="sign-out" class="menu-item">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            height="28px"
+            viewBox="0 -960 960 960"
+            width="28px"
+            fill="#2d3c5a"
+            ><path
+                d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"
+            ></path></svg
+        >
+        <span class="menu-item-span">Cerrar sesión</span>
+    </button>
+</aside>
+
+<style is:global>
+    #logo {
+        width: 25px;
+        height: auto;
+    }
+    #sidebar-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.5rem;
+    }
+    #sidebar-header.close {
+        gap: 0;
+    }
+    #sidebar {
+        background: #ccd0d8;
+        color: #2d3c5a;
+        display: flex;
+        flex-direction: column;
+        border-top-left-radius: 0.25rem;
+        border-bottom-left-radius: 0.25rem;
+        padding: 1rem;
+        height: 100%;
+        width: 250px;
+        overflow: hidden;
+        text-wrap: nowrap;
+    }
+    #sidebar.close {
+        align-items: center;
+        padding: 0.5rem;
+        width: 60px;
+    }
+    #menu-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding-top: 1rem;
+        height: 100%;
+    }
+    #sidebar-menu {
+        height: 100%;
+    }
+    #sidebar-title {
+        font-weight: 600;
+    }
+    #sidebar-title.close {
+        display: none;
+    }
+    #logo.close {
+        display: none;
+    }
+    #button-toggle-menu {
+        border-radius: 0.25rem;
+    }
+    #button-toggle-menu:hover {
+        background: #2d3c5a;
+    }
+    #button-toggle-menu:hover svg {
+        fill: white;
+    }
+    #button-toggle-menu.rotate {
+        transform: rotate(180deg);
+    }
+    .menu-item {
+        display: flex;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        gap: 0.5rem;
+    }
+    .menu-item:hover {
+        background: #2d3c5a;
+        color: white;
+    }
+    .menu-item:hover svg {
+        fill: white;
+    }
+    .menu-item-span.close {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        #main-content {
+            border-top-left-radius: 0.25rem;
+            border-top-right-radius: 0.25rem;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        #container {
+            flex-direction: column-reverse;
+        }
+        #sidebar,
+        #sidebar.close {
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            height: fit-content;
+            width: 100%;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            border-bottom-left-radius: 0.25rem;
+            border-bottom-right-radius: 0.25rem;
+        }
+        #sidebar-menu {
+            width: 100%;
+        }
+        #menu-list {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            padding-top: 0;
+            gap: 2rem;
+            width: 100%;
+            height: 100%;
+        }
+        #sidebar-title {
+            display: none;
+        }
+        #button-toggle-menu {
+            display: none;
+        }
+        .menu-item-span {
+            display: none;
+        }
+    }
+</style>
+
+<script>
+    const aside = document.getElementById("sidebar");
+    const toggleButton = document.getElementById("button-toggle-menu");
+    const sidebarTitle = document.getElementById("sidebar-title");
+    const sidebarHeader = document.getElementById("sidebar-header");
+    const logo = document.getElementById("logo");
+    const signOut = document.getElementById("sign-out");
+    const menuItemSpan = document.getElementsByClassName("menu-item-span");
+
+    if (aside && toggleButton && sidebarTitle && logo && menuItemSpan && sidebarHeader) {
+        // Toggle sidebar
+        toggleButton.addEventListener("click", () => {
+            aside.classList.toggle("close");
+            toggleButton.classList.toggle("rotate");
+            sidebarTitle.classList.toggle("close");
+            sidebarHeader.classList.toggle("close");
+            logo.classList.toggle("close");
+            for (let i = 0; i < menuItemSpan.length; i++) {
+                menuItemSpan[i].classList.toggle("close");
+            }
+        });
+    }
+
+    if (signOut) {
+        signOut.addEventListener("click", async () => {
+            const confirmSignOut = confirm("¿Cerrar sesión?");
+            if (!confirmSignOut) {
+                return;
+            }
+            try {
+                const response = await fetch(
+                    "http://localhost:4321/api/auth/signout", // API endopoint to sign out
+                );
+                if (response.ok) {
+                    window.location.href = "http://localhost:4321/signin"; // Redirect to sign-in page if sign out is successful
+                } else {
+                    alert("Error al cerrar sesión");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error al cerrar sesión");
+            }
+        });
+    }
+</script>

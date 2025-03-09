@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Modal from "../components/modal.astro";
+import Modal from "../components/Modal.astro";
 import type { StudentRequest } from "../types/types";
 
 // Fetch data
@@ -8,12 +8,14 @@ let studentSubjects: StudentRequest | null = null;
 let fetchError: string | null = null;
 
 try {
-    const response = await fetch("http://localhost:4321/api/student_info/subjects");
-    
+    const response = await fetch(
+        "http://localhost:4321/api/student_info/subjects",
+    );
+
     if (!response.ok) {
         fetchError = `Error fetching academic records: ${response.statusText}`;
     } else {
-        studentSubjects = await response.json() as StudentRequest;
+        studentSubjects = (await response.json()) as StudentRequest;
     }
 } catch (err) {
     fetchError = `Fetch error: ${(err as Error).message}`;
@@ -21,36 +23,51 @@ try {
 ---
 
 <Layout title="Home">
-    {fetchError && (
-        <p>{fetchError}</p>
-    )}
+    {fetchError && <p>{fetchError}</p>}
+    <section>
+        {
+            studentSubjects ? (
+                <>
+                    <ul>
+                        {studentSubjects.subjects.map((subject) => (
+                            <li>
+                                <strong>{subject.nrc}</strong> - {subject.name}
+                            </li>
+                        ))}
+                    </ul>
 
-    {studentSubjects ? (
-        <>
-            <ul>
-                {studentSubjects.subjects.map((subject) => (
-                    <li>
-                        <strong>{subject.nrc}</strong> - {subject.name}
-                    </li>
-                ))}
-            </ul>
+                    {studentSubjects.request ? (
+                        <p>
+                            Request Status:{" "}
+                            <span>{studentSubjects.status}</span>
+                        </p>
+                    ) : (
+                        <button class="process">Start Process</button>
+                    )}
 
-            {studentSubjects.request ? (
-                <p>
-                    Request Status: <span>{studentSubjects.status}</span>
-                </p>
+                    <Modal />
+                </>
             ) : (
-                <button class="process">
-                    Start Process
-                </button>
-            )}
-            
-            <Modal />
-        </>
-    ) : !fetchError && (
-        <p>Loading student data...</p>
-    )}
+                !fetchError && <p>Loading student data...</p>
+            )
+        }
+    </section>
 </Layout>
+
+<style>
+    section {
+        display: flex;
+        flex-direction: column;
+        text-wrap: pretty;
+    }
+    h2 {
+        font-size: 34px;
+        font-family: roboto, serif, sans-serif;
+        font-weight: bold;
+        align-self: center;
+        color: #64748b;
+    }
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -61,6 +78,6 @@ try {
             processButton.addEventListener("click", () => {
                 dialog.showModal();
             });
-        };
+        }
     });
 </script>

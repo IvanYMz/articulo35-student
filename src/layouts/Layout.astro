@@ -1,3 +1,7 @@
+---
+import SideBarMenu from "../components/SideBarMenu.astro";
+---
+
 <!doctype html>
 <html lang="es">
 	<head>
@@ -7,23 +11,13 @@
 		<meta name="generator" content={Astro.generator} />
 		<title>Artículo 35</title>
 	</head>
-	<body>
-		<aside>
-			<nav>
-				<a href="student_info">Mi info</a>
-			</nav>
-		</aside>
-		<main>
+	<body id="container" class="h-dvh p-4 bg-[#2D3C5A] flex">
+		<SideBarMenu />
+		<main
+			id="main-content"
+			class="flex w-full h-full bg-[#F0F2F6] rounded-r overflow-auto p-4"
+		>
 			<slot />
 		</main>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
