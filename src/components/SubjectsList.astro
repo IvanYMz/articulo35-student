@@ -1,0 +1,110 @@
+---
+import Modal from "../components/Modal.astro";
+import type { StudentRequest } from "../types/types";
+
+// Fetch data
+let studentSubjects: StudentRequest | null = null;
+let fetchError: string | null = null;
+
+try {
+    const response = await fetch(
+        "http://localhost:4321/api/student_info/subjects",
+    );
+
+    if (!response.ok) {
+        fetchError = `Error fetching academic records: ${response.statusText}`;
+    } else {
+        studentSubjects = (await response.json()) as StudentRequest;
+    }
+} catch (err) {
+    fetchError = `Fetch error: ${(err as Error).message}`;
+}
+---
+
+{
+    studentSubjects ? (
+        <div>
+            <ul>
+                {studentSubjects.subjects.map((subject) => (
+                    <li class="shadow">
+                        <span class="span-nrc">{subject.nrc}</span>
+                        <span class="span-name">{subject.name}</span>
+                    </li>
+                ))}
+            </ul>
+
+            {studentSubjects.request ? (
+                <p>
+                    Estado de la solicitud:{" "}
+                    <span>{studentSubjects.status}</span>
+                </p>
+            ) : (
+                <button class="process">Solicitar oportunidad</button>
+            )}
+
+        </div>
+        <Modal />
+    ) : (
+        !fetchError && <p>Recuperando las materias disponibles...</p>
+    )
+}
+
+<style>
+    div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
+        gap: 1rem;
+    }
+    ul {
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem;
+        height: 100%;
+        width: 75%;
+        gap: 0.75rem;
+    }
+    li {
+        display: flex;
+        flex-direction: column;
+        background: white;
+        width: 100%;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+    button {
+        background: #2d3c5a;
+        color: white;
+        padding: 0.5rem;
+        border-radius: 0.3rem;
+    }
+    .span-nrc {
+        font-size: 1.25rem;
+        font-weight: 1.25rem;
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #2d3c5a;
+        border-bottom: 2px solid #2d3c5a;
+    }
+    .span-name {
+        font-size: 1rem;
+        font-weight: 1rem;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const processButton = document.querySelector(".process");
+        const dialog = document.querySelector("dialog");
+
+        if (processButton && dialog) {
+            processButton.addEventListener("click", () => {
+                dialog.showModal();
+            });
+        }
+    });
+</script>

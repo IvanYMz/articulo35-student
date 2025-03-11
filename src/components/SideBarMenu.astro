@@ -1,5 +1,6 @@
 ---
-
+const pathname = new URL(Astro.request.url).pathname;
+const currentPath = pathname.slice(1);
 ---
 
 <aside id="sidebar">
@@ -28,7 +29,7 @@
     <nav id="sidebar-menu">
         <ul id="menu-list">
             <li>
-                <a class="menu-item" href="/home">
+                <a class={`menu-item ${currentPath === "home" ? "active" : ""}`} href="/home">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="28px"
@@ -44,7 +45,7 @@
             </li>
 
             <li>
-                <a class="menu-item" href="student_files">
+                <a class={`menu-item ${currentPath === "student_files" ? "active" : ""}`} href="student_files">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="28px"
@@ -60,7 +61,7 @@
             </li>
 
             <li>
-                <a class="menu-item" href="/student_info">
+                <a class={`menu-item ${currentPath === "student_info" ? "active" : ""}`} href="/student_info">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="28px"
@@ -168,6 +169,15 @@
     .menu-item:hover svg {
         fill: white;
     }
+    .menu-item.active {
+        background: #2d3c5a;
+        color: white;
+    }
+
+    .menu-item.active svg {
+        fill: white;
+    }
+
     .menu-item-span.close {
         display: none;
     }
@@ -228,7 +238,14 @@
     const signOut = document.getElementById("sign-out");
     const menuItemSpan = document.getElementsByClassName("menu-item-span");
 
-    if (aside && toggleButton && sidebarTitle && logo && menuItemSpan && sidebarHeader) {
+    if (
+        aside &&
+        toggleButton &&
+        sidebarTitle &&
+        logo &&
+        menuItemSpan &&
+        sidebarHeader
+    ) {
         // Toggle sidebar
         toggleButton.addEventListener("click", () => {
             aside.classList.toggle("close");
