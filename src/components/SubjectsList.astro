@@ -6,6 +6,12 @@ import type { StudentRequest } from "../types/types";
 let studentSubjects: StudentRequest | null = null;
 let fetchError: string | null = null;
 
+const statusTranslations: Record<string, string> = {
+    under_review: "En revisión",
+    rejected: "Rechazado",
+    accepted: "Aceptado",
+};
+
 try {
     const response = await fetch(
         "http://localhost:4321/api/student_info/subjects",
@@ -34,10 +40,9 @@ try {
             </ul>
 
             {studentSubjects.request ? (
-                <p>
-                    Estado de la solicitud:{" "}
-                    <span>{studentSubjects.status}</span>
-                </p>
+                <p id="status" class={studentSubjects.status}>
+                        {studentSubjects.status ? statusTranslations[studentSubjects.status] || studentSubjects.status : "Estado desconocido"}
+                    </p>
             ) : (
                 <button class="process">Solicitar oportunidad</button>
             )}
@@ -55,6 +60,7 @@ try {
         flex-direction: column;
         align-items: center;
         overflow: hidden;
+        padding: 1rem;
         height: 100%;
         width: 100%;
         gap: 1rem;
@@ -65,7 +71,7 @@ try {
         flex-direction: column;
         padding: 1rem;
         height: 100%;
-        width: 75%;
+        width: 100%;
         gap: 0.75rem;
     }
     li {
@@ -93,6 +99,41 @@ try {
     .span-name {
         font-size: 1rem;
         font-weight: 1rem;
+    }
+    #status {
+        width: fit-content;
+        justify-self: center;
+        border-radius: 1rem;
+        padding: 0.25rem 0.5rem;
+        border: 1.5px solid;
+    }
+    .accepted {
+        background: #cee9e6;
+        color: #0d9488;
+        border-color: #0d9488;
+    }
+    .rejected {
+        background: pink;
+        color: red;
+        border-color: red;
+    }
+    .under_review {
+        background: #fbeacc;
+        color: #f59e0b;
+        border-color: #f59e0b;
+    }
+    @media (min-width: 768px) {
+        #status {
+            font-size: 20px;
+            width: fit-content;
+            justify-self: center;
+            border-radius: 1.5rem;
+            padding: 0.5rem 0.75rem;
+            border: 2px solid;
+        }
+        ul {
+            width: 75%;
+        }
     }
 </style>
 

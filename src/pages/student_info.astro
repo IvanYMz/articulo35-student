@@ -2,33 +2,175 @@
 import Layout from "../layouts/Layout.astro";
 import type { StudentInformation } from "../types/types";
 
-// Fetch data
-let studentInformation: StudentInformation | null = null;
-let fetchError: string | null = null;
+const { id } = Astro.params;
 
+// Initialize a default student object with empty values
+let student: StudentInformation = {
+    personalData: {
+        student_id: "",
+        full_name: "",
+        email: "",
+        date_of_birth: "",
+        country: "",
+        state: "",
+        municipality: "",
+        postal_code: "",
+        address: "",
+        emergency_contact: "",
+    },
+    academicData: {
+        student_id: "",
+        full_name: "",
+        student_code: "",
+        career: "",
+        average_score: 0,
+        enrollment_cycle: "",
+        graduation_cycle: "",
+        approved_credits: 0,
+        pending_credits: 0,
+        division: "",
+    }
+};
+
+// Fetch student information from the API
 try {
     const response = await fetch(
-        "http://localhost:4321/api/student_info/student_information",
+        `http://localhost:4321/api/student_info/student_information`,
     );
 
     if (!response.ok) {
-        fetchError = `Error fetching academic records: ${response.statusText}`;
+        console.error("Error fetching student information");
     } else {
-        studentInformation = (await response.json()) as StudentInformation;
+        student = (await response.json()) as StudentInformation;
     }
 } catch (err) {
-    fetchError = `Fetch error: ${(err as Error).message}`;
+    console.error("Fetch error:", err);
 }
 ---
-
 <Layout title="Mis datos">
-    {fetchError && <p>{fetchError}</p>}
+    <section>
+        <div id="personal-info">
+            <ul id="personal-list-info">
+                <h2>Información Personal</h2>
+                <li><img src="/src/assets/New_Name_Icon.svg" alt=""><p>Nombre: {student.personalData.full_name}</p></li>
+                <li><img src="/src/assets/Mail_Icon.svg" /><p>Correo: {student.personalData.email}</p></li>
+                <li><img src="/src/assets/New_Calendar_Icon.svg" alt=""><p>Fecha de Nacimiento: {student.personalData.date_of_birth}</p></li>
+                <li><img src="/src/assets/Country_Icon.svg" alt=""><p>País: {student.personalData.country}</p></li>
+                <li><img src="/src/assets/State_Icon.svg" alt="" /><p>Estado: {student.personalData.state}</p></li>
+                <li><img src="/src/assets/Municipio_Icon.svg" alt="" /><p>Municipio: {student.personalData.municipality}</p></li>
+                <li><img src="/src/assets/Postal_Code_Icon.svg" alt="" /><p>Código Postal: {student.personalData.postal_code}</p></li>
+                <li><img src="/src/assets/Direccion_Icon.svg" alt="" /><p>Dirección: {student.personalData.address}</p></li>
+                <li><img src="/src/assets/Emergency_Contact_Icon.svg" alt="" /><p>Contacto de Emergencia: {student.personalData.emergency_contact}</p></li>
+            </ul>
+        </div>
 
-    {
-        studentInformation ? (
-            <>{studentInformation.personalData.full_name}</>
-        ) : (
-            !fetchError && <p>Loading student data...</p>
-        )
-    }
+        <div id="academic-info">
+                <h2>Información Académica</h2>
+                <ul id="academic-list-info">
+                    <li>
+                        <img src="/src/assets/CodeIcon.svg" alt="Icono de código" />
+                        <p>Código: {student.academicData.student_code}</p>
+                    </li>
+                    <li>
+                        <img src="/src/assets/DegreeIcon.svg" alt="Icono de carrera" />
+                        <p>Carrera: {student.academicData.career}</p>
+                    </li>
+                    <li>
+                        <img src="/src/assets/GradesIcon.svg" alt="Icono de promedio" />
+                        <p>Promedio: {student.academicData.average_score}</p>
+                    </li>
+                    <li>
+                        <img src="/src/assets/CalendarStartIcon.svg" alt="Icono de ciclo de ingreso" />
+                        <p>Ciclo de Ingreso: {student.academicData.enrollment_cycle}</p>
+                    </li>
+                    <li>
+                        <img src="/src/assets/CalendarDoneIcon.svg" alt="Icono de ciclo de egreso" />
+                        <p>Ciclo de Egreso: {student.academicData.graduation_cycle}</p>
+                    </li>
+                    <li>
+                        <img src="/src/assets/CompletedIcon.svg" alt="Icono de créditos aprobados" />
+                        <p>Créditos Aprobados: {student.academicData.approved_credits}</p>
+                    </li>
+                    <li>
+                        <img src="/src/assets/RemainingIcon.svg" alt="Icono de créditos pendientes" />
+                        <p>Créditos Pendientes: {student.academicData.pending_credits}</p>
+                    </li>
+                    <li>
+                        <img src="/src/assets/DepartmentIcon.svg" alt="Icono de división" />
+                        <p>División: {student.academicData.division}</p>
+                    </li>
+                </ul>
+        </div>
+    </section>
 </Layout>
+
+<style>
+    section {
+        display: flex;
+        flex-direction: column;
+        overflow: auto;
+        padding: 0 0.5rem 0 0.5rem;
+        width: 100%;
+        gap: 1rem;
+    }
+    #academic-list-info, #personal-list-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    #personal-list-info li,
+    #academic-list-info li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: fit-content;
+        gap: 0.5rem;
+    }
+    #personal-list-info img,
+    #academic-list-info img {
+        width: 24px;
+        height: 24px;
+    }
+    #academic-info, #personal-info {
+        background: white;
+        width: 100%;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+    #requests {
+        background: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+    h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #2d3c5a;
+        border-bottom: 2px solid #2d3c5a;
+    }
+    li {
+        color: #2d3c5a;
+    }
+    #student-name {
+        font-size: 2rem;
+        font-family: roboto, serif, sans-serif;
+        font-weight: bold;
+        color: #64748b;
+    }
+    #student-mail {
+        font-size: 1rem;
+        font-family: roboto, serif, sans-serif;
+        color: #64748b;
+    }
+
+    @media (max-width: 500px) {
+        #personal-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5px;
+            padding: 0.5rem;
+        }
+    }
+</style>

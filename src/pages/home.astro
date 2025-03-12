@@ -5,7 +5,7 @@ import SubjectsList from "../components/SubjectsList.astro"
 
 <Layout title="Home">
     <section>
-        <h2>Materias disponibles para Artículo 35</h2>
+        <h2 class="sm:text-3xl">Materias disponibles para Artículo 35</h2>
         <SubjectsList />
     </section>
 </Layout>
@@ -15,6 +15,7 @@ import SubjectsList from "../components/SubjectsList.astro"
         display: flex;
         flex-direction: column;
         align-items: center;
+        padding: 0.5rem 0rem 0.5rem 0rem;
         width: 100%;
     }
     h2 {
@@ -25,5 +26,10 @@ import SubjectsList from "../components/SubjectsList.astro"
         color: #64748b;
         text-align: center;
         text-wrap: pretty;
+    }
+    @media (max-width: 600px) {
+        h2 {
+            font-size: 30px;
+        }
     }
 </style>
