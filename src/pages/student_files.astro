@@ -23,7 +23,7 @@ try {
         <p class="text-red-500">{dataError.message}</p>
     )}
 
-    {data && data.length > 0 ? (
+    {((data && data.length > 0) && (data[0].name !== ".emptyFolderPlaceholder" || data[1].name !== ".emptyFolderPlaceholder")) ? (
         <ul class="space-y-4">
             {data.map((file) => (
                 <li class="flex justify-between items-center">

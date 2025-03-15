@@ -1,39 +1,62 @@
-<dialog>
-    <form id="submissionForm" method="dialog">
-        <h2>Explicación de bajo desempeño</h2>
-        <label for="reasons"
-            >Escribe una breve y clara explicación de los motivos por los cuales
-            no has logrado acreditar las materias por las que incurriste en baja
-            por Artículo 35 (Máximo 250 palabras)</label
+<dialog
+    class="w-full h-full max-w-[95%] max-h-[50%] sm:max-w-lg sm:max-h-auto rounded shadow border border-[#2d3c5a]"
+>
+    <form
+        id="submissionForm"
+        method="dialog"
+        class="h-full flex flex-col justify-between gap-2 p-4"
+    >
+        <div class="flex flex-col gap-2">
+            <h1 class="text-2xl font-bold text-[#2d3c5a]">
+                Solicitud de Artículo 35
+            </h1>
+            <h2 class="text-lg font-semibold text-[#2d3c5a]">
+                Explicación de bajo desempeño
+            </h2>
+            <label for="reasons">
+                Escribe una breve y clara explicación de los motivos por los
+                cuales no has logrado acreditar las materias por las que
+                incurriste en baja por Artículo 35 (Máximo 250 palabras)</label
+            >
+            <textarea id="reasons" name="reasons" maxlength="250" required class="p-2 border border-[#2d3c5a] rounded"
+            ></textarea>
+
+            <label>
+                <span>Sube evidencia (PDF)</span>
+                <input
+                    type="file"
+                    id="evidence"
+                    name="evidence"
+                    accept="application/pdf"
+                    required
+                />
+            </label>
+
+            <label>
+                <span>Carta del tutor (PDF)</span>
+                <input
+                    type="file"
+                    id="guardianLetter"
+                    name="guardianLetter"
+                    accept="application/pdf"
+                    required
+                />
+            </label>
+        </div>
+
+        <div
+            class="sticky bottom-0 flex justify-around items-end gap-4 p-2 bg-white"
         >
-        <textarea id="reasons" name="reasons" maxlength="250" required
-        ></textarea>
-
-        <label>
-            <span>Sube evidencia (PDF)</span>
-            <input
-                type="file"
-                id="evidence"
-                name="evidence"
-                accept="application/pdf"
-                required
-            />
-        </label>
-
-        <label>
-            <span>Carta del tutor (PDF)</span>
-            <input
-                type="file"
-                id="guardianLetter"
-                name="guardianLetter"
-                accept="application/pdf"
-                required
-            />
-        </label>
-
-        <div class="flex justify-between mt-4">
-            <button type="submit"> Enviar </button>
-            <button type="button" id="closeModal"> Cancelar </button>
+            <button type="submit" class="bg-white p-2 text-[#2d3c5a] border border-[#2d3c5a] w-1/4 rounded hover:text-white hover:bg-[#2d3c5a]">
+                Enviar
+            </button>
+            <button
+                type="button"
+                id="closeModal"
+                class="bg-[#2d3c5a] p-2 text-white w-1/4 rounded hover:opacity-80"
+            >
+                Cancelar
+            </button>
         </div>
     </form>
 </dialog>
@@ -42,9 +65,11 @@
     const dialog = document.querySelector("dialog");
     const closeModal = document.querySelector("#closeModal");
     const form = document.getElementById("submissionForm");
+    const body = document.querySelector("body");
 
-    if (closeModal && dialog) {
+    if (closeModal && dialog && body) {
         closeModal.addEventListener("click", () => {
+            body.classList.remove("blur");
             dialog.close();
         });
     }

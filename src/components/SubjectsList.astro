@@ -42,7 +42,7 @@ try {
             {studentSubjects.request ? (
                 <p id="status" class={studentSubjects.status}>
                         {studentSubjects.status ? statusTranslations[studentSubjects.status] || studentSubjects.status : "Estado desconocido"}
-                    </p>
+                </p>
             ) : (
                 <button class="process">Solicitar oportunidad</button>
             )}
@@ -141,10 +141,12 @@ try {
     document.addEventListener("DOMContentLoaded", () => {
         const processButton = document.querySelector(".process");
         const dialog = document.querySelector("dialog");
+        const body = document.querySelector("body");
 
-        if (processButton && dialog) {
+        if (processButton && dialog && body) {
             processButton.addEventListener("click", () => {
                 dialog.showModal();
+                body.classList.add("blur");
             });
         }
     });
