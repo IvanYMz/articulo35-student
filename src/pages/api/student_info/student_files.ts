@@ -31,7 +31,7 @@ export const GET: APIRoute = async () => {
             });
         };
 
-        const evidenceFileName = dataEvidence[0].name;
+        const evidenceFileName = dataEvidence[0].name === '.emptyFolderPlaceholder' ? dataEvidence[1].name : dataEvidence[0].name;
 
         const { data: dataGuardian, error: errorFolder } = await supabase
             .storage
@@ -50,7 +50,7 @@ export const GET: APIRoute = async () => {
             });
         };
 
-        const letterFileName = dataGuardian[0].name;
+        const letterFileName = dataGuardian[0].name === '.emptyFolderPlaceholder' ? dataGuardian[1].name : dataGuardian[0].name;
 
         const { data: dataSignedUrls, error: errorSignedlUrls } = await supabase
             .storage

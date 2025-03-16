@@ -6,7 +6,9 @@ let data: StudentFiles | null = null;
 let dataError: Error | null = null;
 
 try {
-    const response = await fetch(`http://localhost:4321/api/student_info/student_files`);
+    const response = await fetch(
+        `http://localhost:4321/api/student_info/student_files`,
+    );
 
     if (!response.ok) {
         throw new Error(`Failed to fetch data: ${response.statusText}`);
@@ -19,55 +21,229 @@ try {
 ---
 
 <Layout title="Mis documentos">
-    {dataError && (
-        <p class="text-red-500">{dataError.message}</p>
-    )}
+    {dataError && <p>{dataError.message}</p>}
 
-    {((data && data.length > 0) && (data[0].name !== ".emptyFolderPlaceholder" || data[1].name !== ".emptyFolderPlaceholder")) ? (
-        <ul class="space-y-4">
-            {data.map((file) => (
-                <li class="flex justify-between items-center">
-                    <a 
-                        href={file.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        class="text-blue-600 hover:underline"
-                    >
-                        {file.name}
-                    </a>
-                    <div class="flex space-x-2">
-                        <button 
-                            class="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 update-button"
-                            data-filename={file.name}
-                            data-filefolder={file.folder}
-                        >
-                            Actualizar
-                        </button>
-                        <input 
-                            type="file" 
-                            accept="application/pdf,image/*" 
-                            class="file-input"
-                            data-filename={file.name}
-                            data-filefolder={file.folder}
-                        />
-                    </div>
-                </li>
-            ))}
-        </ul>
-    ) : (
-        !dataError && <p>No hay documentos disponibles.</p>
-    )}
+    {
+        data &&
+        data.length > 0 &&
+        (data[0].name !== ".emptyFolderPlaceholder" ||
+            data[1].name !== ".emptyFolderPlaceholder") ? (
+            <div>
+                <h2>Mis documentos</h2>
+                <ul>
+                    {data.map((file) => (
+                        <li class="file-item">
+                            <button class="toggle-update-section">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="#2d3c5a"
+                                >
+                                    <path d="m7 17.013 4.413-.015 9.632-9.54c.378-.378.586-.88.586-1.414s-.208-1.036-.586-1.414l-1.586-1.586c-.756-.756-2.075-.752-2.825-.003L7 12.583v4.43zM18.045 4.458l1.589 1.583-1.597 1.582-1.586-1.585 1.594-1.58zM9 13.417l6.03-5.973 1.586 1.586-6.029 5.971L9 15.006v-1.589z" />
+                                    <path d="M5 21h14c1.103 0 2-.897 2-2v-8.668l-2 2V19H8.158c-.026 0-.053.01-.079.01-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2z" />
+                                </svg>
+                            </button>
+                            <button
+                                class="openFileButton hover:shadow-lg hover:scale-105 cursor-pointer"
+                                data-url={file.url}
+                            >
+                                <img
+                                    src="/src/assets/FileTypePdf.svg"
+                                    alt="Icono de archivo"
+                                />
+                                <span>{file.name}</span>
+                            </button>
+                            <div class="update-section">
+                                <input
+                                    type="file"
+                                    class="file-input"
+                                    accept="application/pdf"
+                                    data-filename={file.name}
+                                    data-filefolder={file.folder}
+                                />
+                                <button
+                                    class="update-button"
+                                    data-filename={file.name}
+                                    data-filefolder={file.folder}
+                                >
+                                    Actualizar
+                                </button>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        ) : (
+            !dataError && <p>No hay documentos disponibles.</p>
+        )
+    }
 </Layout>
+
+<style>
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        padding-top: 0.5rem;
+        gap: 1rem;
+    }
+    li {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        width: 30%;
+    }
+    h2 {
+        font-size: 1.25rem;
+        font-weight: 600;
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #2d3c5a;
+        border-bottom: 2px solid #2d3c5a;
+    }
+    div {
+        background: white;
+        width: 100%;
+        padding: 1rem;
+        border-radius: 0.5rem;
+    }
+    .update-button {
+        border: solid 1px #2d3c5a;
+        color: #2d3c5a;
+        width: fit-content;
+        align-self: center;
+        padding: 0.5rem;
+        border-radius: 0.3rem;
+    }
+    .update-button:hover {
+        background: #2d3c5a;
+        color: white;
+    }
+    .update-section {
+        display: none;
+    }
+    .update-section.open {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .toggle-update-section {
+        align-self: flex-end;
+        border-radius: 0.25rem;
+        padding: 0.25rem;
+    }
+    .toggle-update-section.active,
+    .toggle-update-section:hover {
+        background: #2d3c5a;
+    }
+    .toggle-update-section.active svg,
+    .toggle-update-section:hover svg {
+        fill: white;
+    }
+    .openFileButton {
+        width: 7rem;
+        height: 9rem;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        border: solid 0.5px #2d3c5a;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .openFileButton span {
+        width: 100%;
+        color: #2d3c5a;
+        text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+    .openFileButton img {
+        width: 75px;
+        height: 75px;
+    }
+
+    .error-box {
+        background: #ffe6e6;
+        color: #d8000c;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #d8000c;
+    }
+
+    @media (max-width: 768px) {
+        ul {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        li {
+            width: 90%;
+        }
+    }
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const updateButtons = document.querySelectorAll<HTMLButtonElement>(".update-button");
+        const updateButtons =
+            document.querySelectorAll<HTMLButtonElement>(".update-button");
+        // Open file in new tab
+        document.querySelectorAll(".openFileButton").forEach((button) => {
+            button.addEventListener("click", () => {
+                const fileUrl = button.getAttribute("data-url");
+                if (fileUrl) {
+                    window.open(fileUrl, "_blank", "noopener,noreferrer");
+                }
+            });
+        });
 
-        updateButtons.forEach(button => {
+        // Show update section
+        document
+            .querySelectorAll(".toggle-update-section")
+            .forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    const fileItem = (
+                        event.currentTarget as HTMLElement
+                    ).closest(".file-item");
+
+                    if (!fileItem) return;
+
+                    // Toggle update section
+                    const updateSection =
+                        fileItem.querySelector(".update-section");
+                    updateSection?.classList.toggle("open");
+                    button.classList.toggle("active");
+                });
+            });
+
+        // Update file
+        updateButtons.forEach((button) => {
             button.addEventListener("click", (event) => {
-                const fileName = (event.target as HTMLButtonElement).getAttribute("data-filename");
-                const fileFolder = (event.target as HTMLButtonElement).getAttribute("data-filefolder");
-                const fileInput = document.querySelector<HTMLInputElement>(`.file-input[data-filename="${fileName}"]`);
+                const fileName = (
+                    event.target as HTMLButtonElement
+                ).getAttribute("data-filename");
+                const fileFolder = (
+                    event.target as HTMLButtonElement
+                ).getAttribute("data-filefolder");
+                const fileInput = document.querySelector<HTMLInputElement>(
+                    `.file-input[data-filename="${fileName}"]`,
+                );
+
+                if (!fileInput) return;
+
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    alert(
+                        "Por favor, selecciona un archivo antes de actualizar.",
+                    );
+                    fileInput.style.border = "1px solid #2d3c5a";
+                    return;
+                }
+
 
                 if (fileInput) {
                     fileInput.click();
@@ -75,26 +251,36 @@ try {
                     fileInput.onchange = async () => {
                         const file = fileInput.files?.[0];
                         if (!file) return;
-                        alert(fileFolder)
+                        alert(fileFolder);
                         const formData = new FormData();
-                        formData.append('file', file);
-                        formData.append('name', fileName || '');
-                        formData.append('folder', fileFolder || '')
+                        formData.append("file", file);
+                        formData.append("name", fileName || "");
+                        formData.append("folder", fileFolder || "");
 
                         try {
-                            const response = await fetch(`http://localhost:4321/api/student_info/update_files`, {
-                                method: 'PUT',
-                                body: formData,
-                            });
+                            const response = await fetch(
+                                `http://localhost:4321/api/student_info/update_files`,
+                                {
+                                    method: "PUT",
+                                    body: formData,
+                                },
+                            );
 
                             if (!response.ok) {
-                                throw new Error(`Error al actualizar el archivo: ${response.statusText}`);
+                                throw new Error(
+                                    `Error al actualizar el archivo: ${response.statusText}`,
+                                );
                             }
 
-                            alert(`Archivo ${fileName} actualizado correctamente.`);
+                            alert(
+                                `Archivo ${fileName} actualizado correctamente.`,
+                            );
                             window.location.reload();
                         } catch (error) {
-                            console.error('Error al actualizar el archivo:', error);
+                            console.error(
+                                "Error al actualizar el archivo:",
+                                error,
+                            );
                         }
                     };
                 }
