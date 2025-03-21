@@ -9,14 +9,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
     // Get the requested URL
     const url = new URL(context.request.url);
 
-    // Exclude API routes from the token verification
-    if (url.pathname.startsWith("/api/")) {
-        return next(); // If the URL starts with /api/, don't apply the middleware
-    }
-
-    // Exclude the /signin page from the redirect logic
-    if (url.pathname === "/signin") {
-        return next(); // If we're at /signin, continue without doing anything
+    // Exclude API routes and signIn from the token verification
+    if (url.pathname.startsWith("/api/") || url.pathname === "/signin") {
+        return next(); // If the URL starts with /api/ or equals to signin, don't apply the middleware
     }
 
     // If there are no access or refresh tokens, redirect to signin
