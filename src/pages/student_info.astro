@@ -1,8 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { API_ROUTES } from "../lib/apiRoutes";
 import type { StudentInformation } from "../types/types";
-
-const { id } = Astro.params;
 
 // Initialize a default student object with empty values
 let student: StudentInformation = {
@@ -35,7 +34,7 @@ let student: StudentInformation = {
 // Fetch student information from the API
 try {
     const response = await fetch(
-        `http://localhost:4321/api/student_info/student_information`,
+        API_ROUTES.STUDENT_INFORMATION,
     );
 
     if (!response.ok) {

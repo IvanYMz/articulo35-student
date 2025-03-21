@@ -71,6 +71,7 @@
 </dialog>
 
 <script>
+    import { API_ROUTES } from "../lib/apiRoutes";
     const dialog = document.querySelector("dialog");
     const closeModal = document.querySelector("#closeModal");
     const form = document.getElementById("submissionForm");
@@ -92,7 +93,7 @@
 
             try {
                 const response = await fetch(
-                    "http://localhost:4321/api/student_info/send_request",
+                    API_ROUTES.STUDENT_SEND_REQUEST,
                     {
                         method: "PUT",
                         body: formData,

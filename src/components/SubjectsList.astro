@@ -1,5 +1,6 @@
 ---
 import Modal from "../components/Modal.astro";
+import { API_ROUTES } from "../lib/apiRoutes";
 import type { StudentRequest } from "../types/types";
 
 // Fetch data
@@ -14,7 +15,7 @@ const statusTranslations: Record<string, string> = {
 
 try {
     const response = await fetch(
-        "http://localhost:4321/api/student_info/subjects",
+        API_ROUTES.STUDENT_SUBJECTS,
     );
 
     if (!response.ok) {

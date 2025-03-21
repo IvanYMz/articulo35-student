@@ -1,14 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { API_ROUTES } from "../lib/apiRoutes";
 import type { StudentFiles } from "../types/types";
 
 let data: StudentFiles | null = null;
 let dataError: Error | null = null;
 
 try {
-    const response = await fetch(
-        `http://localhost:4321/api/student_info/student_files`,
-    );
+    const response = await fetch(API_ROUTES.STUDENT_FILES);
 
     if (!response.ok) {
         throw new Error(`Failed to fetch data: ${response.statusText}`);
@@ -21,7 +20,14 @@ try {
 ---
 
 <Layout title="Mis documentos">
-    {dataError && <p>{dataError.message}</p>}
+    {
+        dataError && (
+            <div>
+                    <p>Es probable que aún no existan documentos disponibles</p>
+                    <p>Error {dataError.message}</p>
+            </div>
+        )
+    }
 
     {
         data &&
@@ -189,11 +195,13 @@ try {
 </style>
 
 <script>
+    import { API_ROUTES } from "../lib/apiRoutes";
+
     document.addEventListener("DOMContentLoaded", () => {
-        const updateButtons =
-            document.querySelectorAll<HTMLButtonElement>(".update-button");
+        const updateButtons = document.querySelectorAll<HTMLButtonElement>(".update-button");
+
         // Open file in new tab
-        document.querySelectorAll(".openFileButton").forEach((button) => {
+        document.querySelectorAll<HTMLButtonElement>(".openFileButton").forEach((button) => {
             button.addEventListener("click", () => {
                 const fileUrl = button.getAttribute("data-url");
                 if (fileUrl) {
@@ -203,88 +211,70 @@ try {
         });
 
         // Show update section
-        document
-            .querySelectorAll(".toggle-update-section")
-            .forEach((button) => {
-                button.addEventListener("click", (event) => {
-                    const fileItem = (
-                        event.currentTarget as HTMLElement
-                    ).closest(".file-item");
+        document.querySelectorAll<HTMLButtonElement>(".toggle-update-section").forEach((button) => {
+            button.addEventListener("click", (event) => {
+                const buttonElement = event.currentTarget as HTMLButtonElement;
+                const fileItem = buttonElement.closest(".file-item");
+                if (!fileItem) return;
 
-                    if (!fileItem) return;
-
-                    // Toggle update section
-                    const updateSection =
-                        fileItem.querySelector(".update-section");
-                    updateSection?.classList.toggle("open");
-                    button.classList.toggle("active");
-                });
+                const updateSection = fileItem.querySelector<HTMLElement>(".update-section");
+                if (updateSection) {
+                    updateSection.classList.toggle("open");
+                }
+                buttonElement.classList.toggle("active");
             });
+        });
 
         // Update file
         updateButtons.forEach((button) => {
-            button.addEventListener("click", (event) => {
-                const fileName = (
-                    event.target as HTMLButtonElement
-                ).getAttribute("data-filename");
-                const fileFolder = (
-                    event.target as HTMLButtonElement
-                ).getAttribute("data-filefolder");
+            button.addEventListener("click", async (event) => {
+                const buttonElement = event.currentTarget as HTMLButtonElement;
+                const fileName = buttonElement.getAttribute("data-filename") || "";
+                const fileFolder = buttonElement.getAttribute("data-filefolder") || "";
                 const fileInput = document.querySelector<HTMLInputElement>(
-                    `.file-input[data-filename="${fileName}"]`,
+                    `.file-input[data-filename="${fileName}"]`
                 );
 
-                if (!fileInput) return;
-
-                if (!fileInput.files || fileInput.files.length === 0) {
-                    alert(
-                        "Por favor, selecciona un archivo antes de actualizar.",
-                    );
-                    fileInput.style.border = "1px solid #2d3c5a";
+                if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                    alert("Por favor, selecciona un archivo antes de actualizar.");
                     return;
                 }
 
+                const file = fileInput.files[0];
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("name", fileName);
+                formData.append("folder", fileFolder);
 
-                if (fileInput) {
-                    fileInput.click();
+                // Disable button and show loading state
+                buttonElement.disabled = true;
+                buttonElement.textContent = "Actualizando...";
+                buttonElement.style.opacity = "0.6";
+                buttonElement.style.cursor = "not-allowed";
 
-                    fileInput.onchange = async () => {
-                        const file = fileInput.files?.[0];
-                        if (!file) return;
-                        alert(fileFolder);
-                        const formData = new FormData();
-                        formData.append("file", file);
-                        formData.append("name", fileName || "");
-                        formData.append("folder", fileFolder || "");
+                try {
+                    const response = await fetch(API_ROUTES.UPDATE_FILES, {
+                        method: "PUT",
+                        body: formData,
+                    });
 
-                        try {
-                            const response = await fetch(
-                                `http://localhost:4321/api/student_info/update_files`,
-                                {
-                                    method: "PUT",
-                                    body: formData,
-                                },
-                            );
+                    if (!response.ok) {
+                        throw new Error(`Error al actualizar el archivo: ${response.statusText}`);
+                    }
 
-                            if (!response.ok) {
-                                throw new Error(
-                                    `Error al actualizar el archivo: ${response.statusText}`,
-                                );
-                            }
-
-                            alert(
-                                `Archivo ${fileName} actualizado correctamente.`,
-                            );
-                            window.location.reload();
-                        } catch (error) {
-                            console.error(
-                                "Error al actualizar el archivo:",
-                                error,
-                            );
-                        }
-                    };
+                    alert(`Archivo ${fileName} actualizado correctamente.`);
+                    window.location.reload();
+                } catch (error) {
+                    console.error("Error al actualizar el archivo:", error);
+                    alert("Hubo un error al actualizar el archivo. Inténtalo de nuevo.");
+                } finally {
+                    // Restore button state
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = "Actualizar";
+                    buttonElement.style.background = "";
                 }
             });
         });
     });
 </script>
+

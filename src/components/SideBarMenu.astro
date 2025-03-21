@@ -202,6 +202,7 @@ const currentPath = pathname.slice(1);
 </style>
 
 <script>
+    import { API_ROUTES } from "../lib/apiRoutes";
     const aside = document.getElementById("sidebar");
     const toggleButton = document.getElementById("button-toggle-menu");
     const sidebarTitle = document.getElementById("sidebar-title");
@@ -239,10 +240,10 @@ const currentPath = pathname.slice(1);
             }
             try {
                 const response = await fetch(
-                    "http://localhost:4321/api/auth/signout", // API endopoint to sign out
+                    API_ROUTES.AUTH_SIGNOUT, // API endopoint to sign out
                 );
                 if (response.ok) {
-                    window.location.href = "http://localhost:4321/signin"; // Redirect to sign-in page if sign out is successful
+                    window.location.href = '/'; // Redirect to sign-in page if sign out is successful
                 } else {
                     alert("Error al cerrar sesión");
                 }
