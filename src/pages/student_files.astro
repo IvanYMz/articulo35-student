@@ -34,7 +34,7 @@ try {
         data.length > 0 &&
         (data[0].name !== ".emptyFolderPlaceholder" ||
             data[1].name !== ".emptyFolderPlaceholder") ? (
-            <div>
+            <div class="overflow-y-auto">
                 <h2>Mis documentos</h2>
                 <ul>
                     {data.map((file) => (

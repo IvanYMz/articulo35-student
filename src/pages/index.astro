@@ -1,7 +1,40 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from "../layouts/Layout.astro"
+import SubjectsList from "../components/SubjectsList.astro"
+
+
+const pathname = new URL(Astro.request.url).pathname;
+const currentPath = pathname.slice(1);
+console.log(currentPath)
 ---
 
-<Layout title="index">
-	<p>...</p>
+<Layout title="Inicio">
+    <section>
+        <h2 class="sm:text-3xl">Materias disponibles para Artículo 35</h2>
+        <SubjectsList />
+    </section>
 </Layout>
+
+<style>
+    section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0.5rem 0rem 0.5rem 0rem;
+        width: 100%;
+    }
+    h2 {
+        font-size: 36px;
+        font-family: roboto, serif, sans-serif;
+        font-weight: bold;
+        align-self: center;
+        color: #64748b;
+        text-align: center;
+        text-wrap: pretty;
+    }
+    @media (max-width: 600px) {
+        h2 {
+            font-size: 30px;
+        }
+    }
+</style>
