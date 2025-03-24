@@ -14,6 +14,7 @@ try {
     }
 
     data = (await response.json()) as StudentFiles;
+    console.log(data);
 } catch (error) {
     dataError = error as Error;
 }
@@ -23,8 +24,8 @@ try {
     {
         dataError && (
             <div>
-                    <p>Es probable que aún no existan documentos disponibles</p>
-                    <p>Error {dataError.message}</p>
+                <p>Es probable que aún no existan documentos disponibles</p>
+                <p>Error {dataError.message}</p>
             </div>
         )
     }
@@ -32,8 +33,10 @@ try {
     {
         data &&
         data.length > 0 &&
-        (data[0].name !== ".emptyFolderPlaceholder" ||
-            data[1].name !== ".emptyFolderPlaceholder") ? (
+        ((data[0].name && data[0].name !== ".emptyFolderPlaceholder") ||
+            (data[1] &&
+                data[1].name &&
+                data[1].name !== ".emptyFolderPlaceholder")) ? (
             <div class="overflow-y-auto">
                 <h2>Mis documentos</h2>
                 <ul>
@@ -198,45 +201,60 @@ try {
     import { API_ROUTES } from "../lib/apiRoutes";
 
     document.addEventListener("DOMContentLoaded", () => {
-        const updateButtons = document.querySelectorAll<HTMLButtonElement>(".update-button");
+        const updateButtons =
+            document.querySelectorAll<HTMLButtonElement>(".update-button");
 
         // Open file in new tab
-        document.querySelectorAll<HTMLButtonElement>(".openFileButton").forEach((button) => {
-            button.addEventListener("click", () => {
-                const fileUrl = button.getAttribute("data-url");
-                if (fileUrl) {
-                    window.open(fileUrl, "_blank", "noopener,noreferrer");
-                }
+        document
+            .querySelectorAll<HTMLButtonElement>(".openFileButton")
+            .forEach((button) => {
+                button.addEventListener("click", () => {
+                    const fileUrl = button.getAttribute("data-url");
+                    if (fileUrl) {
+                        window.open(fileUrl, "_blank", "noopener,noreferrer");
+                    }
+                });
             });
-        });
 
         // Show update section
-        document.querySelectorAll<HTMLButtonElement>(".toggle-update-section").forEach((button) => {
-            button.addEventListener("click", (event) => {
-                const buttonElement = event.currentTarget as HTMLButtonElement;
-                const fileItem = buttonElement.closest(".file-item");
-                if (!fileItem) return;
+        document
+            .querySelectorAll<HTMLButtonElement>(".toggle-update-section")
+            .forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    const buttonElement =
+                        event.currentTarget as HTMLButtonElement;
+                    const fileItem = buttonElement.closest(".file-item");
+                    if (!fileItem) return;
 
-                const updateSection = fileItem.querySelector<HTMLElement>(".update-section");
-                if (updateSection) {
-                    updateSection.classList.toggle("open");
-                }
-                buttonElement.classList.toggle("active");
+                    const updateSection =
+                        fileItem.querySelector<HTMLElement>(".update-section");
+                    if (updateSection) {
+                        updateSection.classList.toggle("open");
+                    }
+                    buttonElement.classList.toggle("active");
+                });
             });
-        });
 
         // Update file
         updateButtons.forEach((button) => {
             button.addEventListener("click", async (event) => {
                 const buttonElement = event.currentTarget as HTMLButtonElement;
-                const fileName = buttonElement.getAttribute("data-filename") || "";
-                const fileFolder = buttonElement.getAttribute("data-filefolder") || "";
+                const fileName =
+                    buttonElement.getAttribute("data-filename") || "";
+                const fileFolder =
+                    buttonElement.getAttribute("data-filefolder") || "";
                 const fileInput = document.querySelector<HTMLInputElement>(
-                    `.file-input[data-filename="${fileName}"]`
+                    `.file-input[data-filename="${fileName}"]`,
                 );
 
-                if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                    alert("Por favor, selecciona un archivo antes de actualizar.");
+                if (
+                    !fileInput ||
+                    !fileInput.files ||
+                    fileInput.files.length === 0
+                ) {
+                    alert(
+                        "Por favor, selecciona un archivo antes de actualizar.",
+                    );
                     return;
                 }
 
@@ -259,14 +277,18 @@ try {
                     });
 
                     if (!response.ok) {
-                        throw new Error(`Error al actualizar el archivo: ${response.statusText}`);
+                        throw new Error(
+                            `Error al actualizar el archivo: ${response.statusText}`,
+                        );
                     }
 
                     alert(`Archivo ${fileName} actualizado correctamente.`);
                     window.location.reload();
                 } catch (error) {
                     console.error("Error al actualizar el archivo:", error);
-                    alert("Hubo un error al actualizar el archivo. Inténtalo de nuevo.");
+                    alert(
+                        "Hubo un error al actualizar el archivo. Inténtalo de nuevo.",
+                    );
                 } finally {
                     // Restore button state
                     buttonElement.disabled = false;
@@ -277,4 +299,3 @@ try {
         });
     });
 </script>
-
